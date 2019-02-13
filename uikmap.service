@@ -1,0 +1,18 @@
+# Copy this file to /etc/systemd/system/uikmap.service
+[Unit]
+Description=uikmap server
+After=network.target
+
+[Service]
+Type=simple
+# Another Type option: forking
+User=ftpnp
+WorkingDirectory=/home/ftpnp/spbuikmap
+ExecStart=uvicorn main:app --port 80
+Restart=on-failure
+# Other Restart options: or always, on-abort, etc
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+
+[Install]
+WantedBy=multi-user.target 

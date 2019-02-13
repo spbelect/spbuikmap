@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Карта УИК СПБ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.rawgit.com/openlayers/openlayers.github.io/master/en/v5.3.0/build/ol.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
+      integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+      crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
+      integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
+      crossorigin=""></script>
+    <script src="http://api-maps.yandex.ru/2.0/?load=package.map&lang=ru-RU" type="text/javascript"></script>
+    <script src="/static/Yandex.js"></script>
+    
+    <style>
+      #map {
+        height: 90%;
+      }
+      .leaflet-div-icon {border: none}
+      .leaflet-popup-content .uikrow{
+        margin: 5px 0;
+      }
+      .leaflet-popup-content{
+        max-height: 500px;
+        overflow: auto;
+        width: 500px !important;
+      }
+      .leaflet-marker-icon img {width: 14px;}
+      
+      .leaflet-marker-icon div {white-space: nowrap;}
+      .leaflet-marker-icon {font-weight: bold;}
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+    
+  </head>
+  <body>
+    <div id="map"></div>
+    
+    <script>
+      $(function(){
+        
+/*
+          var osmUrl='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+          var osmAttrib='Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors';
+//           var osm = new L.TileLayer(osmUrl, {attribution: osmAttrib});		
+
+          L.tileLayer(
+            'http://vec{s}.maps.yandex.net/tiles?l=map&v=4.55.2&z={z}&x={x}&y={y}&scale=2&lang=ru_RU', {
+              subdomains: ['01', '02', '03', '04'],
+              attribution: '<a http="yandex.ru" target="_blank">Яндекс</a>',
+              reuseTiles: true,
+              updateWhenIdle: false
+            }
+          ).addTo(map);
+          */
+        map = new L.Map('map');
+        new L.Yandex().addTo(map);
+
+        map.setView([59.940266, 30.313810], 13);
+//           map.addLayer(osm);
+
+        
+        var icon = 'https://maps.gstatic.com/mapfiles/api-3/images/spotlight-poi-dotless2.png';
+        uikMarker = function(feature, latlng) {
+          var marker = new L.Marker(latlng, {
+            icon: new L.DivIcon({html: `<img src="`+icon+`"/><div >`+feature.properties.label+`</div>`})
+          });
+          popup = ''  
+          for (var i=0;i<feature.properties.uiks.length;i++) {
+            uik = feature.properties.uiks[i];
+            popup += `<div class='uikrow'> TIK ` + uik.tik + ` UIK <b>` + uik.uik + `</b> ` + uik.koib +`<br/>
+            Place: `+uik.place+`<br/>
+            Addr golosovania: `+uik.addr_vote+`<br/>
+            Addr komissii: `+uik.addr_komissii+`<br/>
+            coords: `+JSON.stringify(uik.coords)+`<br/>
+            </div>`
+          }
+          marker.bindPopup(popup);
+          return marker
+        }
+        $.get("/uiks_geo.json").done(function(response) {
+//           alert(JSON.stringify(response));
+          L.geoJSON(response.features, {pointToLayer: uikMarker}).addTo(map);
+        }).fail(function(response) {
+          alert('request failed' + JSON.stringify(response))
+        })
+
+      })
+      
+    </script>
+    
+    <!--<script async defer
+    src="https://maps.googleapis.com/maps/api/js?key={{env('GOOGLE_MAPS_KEY2', default='')}}&callback=initGoogleMap">
+    </script>-->
+  </body>
+</html> 
