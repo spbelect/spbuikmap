@@ -40,7 +40,7 @@ def read_coords():
                 print(tik, uik, coords)
                 continue
             if all(xy.values()):
-                lng, lat = round(xy["lng"], 4), round(xy["lat"], 4)
+                lng, lat = round(xy["lng"], 3), round(xy["lat"], 3)
                 #xy = {'lng': float(xy['lng']), 'lat': float(xy['lat'])}
                 #result[f'{xy["lng"]} {xy["lat"]}'].append(Row(tik, uik, coords)._asdict())
                 result[f'{lng} {lat}'].append(Row(tik, uik, xy))

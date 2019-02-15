@@ -25,6 +25,9 @@
         margin: 5px 0;
       }
       
+      .leaflet-top {
+        z-index: 199 !important;
+      }
       .leaflet-popup-content{
         max-height: 500px;
         overflow: auto;
@@ -34,17 +37,30 @@
           width: 500px !important;
         }
       }
-      .leaflet-marker-icon img {width: 8px;}
+      .leaflet-marker-icon img {
+        width: 8px;
+        z-index: 40 !important;
+      }
       
       .leaflet-marker-icon div {
         white-space: nowrap; 
-        background: white;
         display: inline-block;
+        text-shadow: #fff 1px 1px;
+        z-index: 3555 !important;
+        /*
+        text-shadow:
+        -1px -1px 0 #fff,
+        1px -1px 0 #fff,
+        -1px 1px 0 #fff,
+        1px 1px 0 #fff; */
       }
       .leaflet-marker-icon {
         font-weight: bold; 
         font-size: smaller;
         width: 8px !important;
+        height: 0px !important;
+        z-index: 7 !important;
+
       }
       html, body {
         height: 100%;
