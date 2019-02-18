@@ -16,6 +16,10 @@
     <script src="http://api-maps.yandex.ru/2.0/?load=package.map&lang=ru-RU" type="text/javascript"></script>
     <script src="/static/Yandex.js"></script>
     
+    <script src="/static/leaflet-search.js"></script>
+    
+    <link rel="stylesheet" href="/static/leaflet-search.css" />
+    
     <style>
       #map {
         height: 90%;
@@ -25,9 +29,9 @@
         margin: 5px 0;
       }
       
-      .leaflet-top {
+     /* .leaflet-top {
         z-index: 199 !important;
-      }
+      }*/
       .leaflet-popup-content{
         max-height: 500px;
         overflow: auto;
@@ -100,7 +104,8 @@
         var icon = 'https://maps.gstatic.com/mapfiles/api-3/images/spotlight-poi-dotless2.png';
         uikMarker = function(feature, latlng) {
           var marker = new L.Marker(latlng, {
-            icon: new L.DivIcon({html: `<img src="`+icon+`"/><div >`+feature.properties.label+`</div>`})
+            icon: new L.DivIcon({html: `<img src="`+icon+`"/><div >`+feature.properties.label+`</div>`}),
+            title: feature.properties.label
           });
           popup = ''  
           for (var i=0;i<feature.properties.uiks.length;i++) {
@@ -112,12 +117,25 @@
             coords: `+JSON.stringify(uik.coords)+`<br/>
             </div>`
           }
-          marker.bindPopup(popup);
+          marker.bindPopup(popup).on('popupopen', function(){
+            // Popup should cover zoom\search controls;
+            $('.leaflet-top').css('z-index', '199');
+          }).on('popupclose', function(){
+            $('.leaflet-top').css('z-index', '1000');
+          });
           return marker
         }
         $.get("/uiks_geo.json").done(function(response) {
 //           alert(JSON.stringify(response));
-          L.geoJSON(response.features, {pointToLayer: uikMarker}).addTo(map);
+          layer = L.geoJSON(response.features, {pointToLayer: uikMarker}).addTo(map);
+          
+          new L.Control.Search({
+              position:'topright',		
+              layer: layer,
+              initial: false,
+              zoom: 15,
+              marker: false
+          }).addTo(map);
         }).fail(function(response) {
           alert('request failed' + JSON.stringify(response))
         })
