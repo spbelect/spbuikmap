@@ -23,6 +23,8 @@ def read_coords():
     Row = namedtuple('row', 'tik, uik, coords')
     result = defaultdict(list)
     for tik, uik, coords in csv:
+        #if uikparams[uik]['addr_vote'] != uikparams[uik]['addr_komissii']:
+            #print(tik, uik, uikparams[uik]['addr_vote'], uikparams[uik]['addr_komissii'])
         if coords:
             try:
                 xy = json.loads(coords)
@@ -32,6 +34,10 @@ def read_coords():
             if all(xy.values()):
                 lng, lat = round(xy["lng"], 3), round(xy["lat"], 3)
                 result[f'{lng} {lat}'].append(Row(tik, uik, xy))
+        #elif uikparams[uik]['addr_vote']:
+            #print(tik, uik, uikparams[uik]['addr_vote'])
+        #else:
+            #print(tik, uik, uikparams[uik]['addr_vote'], uikparams[uik]['addr_komissii'])
     return result
 
 
